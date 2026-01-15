@@ -1,0 +1,47 @@
+import os
+from dotenv import load_dotenv
+from azure.identity import DefaultAzureCredential
+from azure.ai.projects import AIProjectClient
+from azure.ai.projects.models import PromptAgentDefinition
+
+# 1. تحميل متغيرات البيئة السيادية
+load_dotenv()
+ENDPOINT = os.environ.get("PROJECT_ENDPOINT")
+MODEL_NAME = "gpt-4.1-mini" # النموذج المعتمد في دليلك
+AGENT_NAME = "Sovereign-AI-Jojo"
+
+# 2. المزامنة مع مسبك مايكروسوفت (Azure AI Foundry)
+project_client = AIProjectClient(
+    endpoint=ENDPOINT,
+    credential=DefaultAzureCredential(),
+)
+
+# 3. إنشاء/تحديث الوكيل بتعليمات "الوكرة 2026"
+agent = project_client.agents.create_version(
+    agent_name=AGENT_NAME,
+    definition=PromptAgentDefinition(
+        model=MODEL_NAME,
+        instructions="""
+        أنت الوكيل السيادي لإدارة ممتلكات الوكرة 2026. 
+        قوانينك الصارمة: 
+        1. أي فاتورة كهرباء تتجاوز 5 ريال قطري تعتبر خرقاً أمنياً.
+        2. المرجع الأساسي هو مشروع jojo-451011 في Google Cloud.
+        3. لغتك الرسمية هي العربية، وشخصيتك جريئة ومقدامة.
+        """
+    ),
+)
+
+print(f"✅ تم تفعيل الوكيل في المسبك: {agent.name} (ID: {agent.id})")
+
+# 4. بدء المحادثة والرقابة
+openai_client = project_client.get_openai_client()
+conversation = openai_client.conversations.create()
+
+# اختبار الوكيل على أول ملف PDF من "قضيتي"
+response = openai_client.responses.create(
+    conversation=conversation.id,
+    extra_body={"agent": {"name": AGENT_NAME, "type": "agent_reference"}},
+    input="افحص ملفات PDF المحملة، هل هناك فاتورة تتجاوز 5 ريال؟",
+)
+
+print(f"📣 رد الوكيل السيادي: {response.output_text}")
