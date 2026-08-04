@@ -1,16 +1,8 @@
-.vscode
-.vs
-.venv
-__pycache__
-
-# Azure Developer CLI (azd)
-.azure/
-
-# Local environment files
+node_modules/
 .env
-.env.*
-!.env.example
-
-# Local-only Bicep parameter overrides
-infra/*.local.bicepparam
-infra/*.local.bicepparam.json
+.env.local
+dist/
+build/
+*.log
+.DS_Store
+coverage/
